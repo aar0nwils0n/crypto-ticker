@@ -1,0 +1,11 @@
+[package]
+name = "crypto-ticker"
+version = "0.1.0"
+authors = ["haronius <aaron.wilso@gmail.com>"]
+
+[dependencies]
+reqwest = "0.9.0"
+serde = "1.0.80"
+serde_json = "1.0.32"
+serde_derive = "1.0.80"
+
