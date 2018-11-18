@@ -32,7 +32,7 @@ struct Ticker {
     data : HashMap<String, Coin>
 }
 
-fn add_padding(string : String, column_length : u32) -> String {
+fn add_padding(string : &String, column_length : u32) -> String {
     let padding_length : u32 = ((column_length - 2) - (string.len() as u32)) / 2;
     let padding : String = (0..padding_length as i16).into_iter().map(|_| " ").collect::<String>();
     let tail : String = String::from(if string.len() as i16 % 2 == 0 { "" } else { " " });
@@ -45,11 +45,16 @@ fn coin_to_row(coin : Coin, column_length : u32) -> String {
         .unwrap_or_default();
         
     let cols = [
-        add_padding(coin.name, column_length),
-        add_padding(coin.symbol, column_length),
-        add_padding(coin.total_supply.to_string(), column_length),
-        add_padding(price, column_length),
-    ];
+        coin.name,
+        coin.symbol,
+        coin.total_supply.to_string(),
+        price
+    ]
+    .into_iter()
+    .map(|col| add_padding(col, column_length))
+    .collect::<Vec<String>>()
+    ;
+
 
     format!("|{}|", cols.join("|"))
 }
@@ -67,9 +72,9 @@ fn main() -> Result<(), reqwest::Error> {
         let column_length : u32 = 18;
         let columns = ["NAME", "SYMBOL", "TOTAL SUPPLY", "PRICE (USD)"]
             .into_iter()
-            .map(|&col| add_padding(String::from(col), column_length));
+            .map(|&col| add_padding(&String::from(col), column_length));
 
-        let border : String = (0..=(column_length - 1) * columns.len() as u32).map(|_| "=").collect::<String>();
+        let border : String = (0..=(column_length - 1) * columns.len() as u32).map(|_| "-").collect::<String>();
         let header : String = format!(
             "{}\n|{}|",
             border,
